@@ -144,12 +144,12 @@ def log_calc(string):
 
 
 def main():
-    expression = input("Enter the expression: ")
+    expression = input("Enter the expression : ")
     try:
         result = calc(expression)
         print(result[0] if result else "No input provided.")
     except Exception as e:
-        print(f"Error in expression: {e}")
+        print(f"Error in expression : {e}")
 
 
 if __name__ == "__main__":
