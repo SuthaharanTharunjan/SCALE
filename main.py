@@ -99,7 +99,7 @@ def value_match_1(match):
     func_name = match.group(1).lower()
     val = calc(match.group(2))[0]
     result = action[func_name](val)
-    return f"{result:.2f}"
+    return f"{result}"
 
 
 def trig_calc(string):
@@ -112,7 +112,7 @@ def value_match_2(match):
     base = calc(match.group(2))[0]
     val = calc(match.group(3))[0]
     result = action[func_name](val, base)
-    return f"{result:.2f}"
+    return f"{result}"
 
 
 def log_calc(string):
@@ -120,8 +120,13 @@ def log_calc(string):
     return re.sub(pattern, value_match_2, string)
 
 
-expression = "log100(10)"
-expression = log_calc(expression)
-expression = trig_calc(expression)
+def main():
+    expression = input("Enter the expression")
+    try:
+        print(calc(expression))
+    except:
+        print("Error in expression")
 
-print(calc(expression))
+
+if __name__ == "__main__":
+    main()
