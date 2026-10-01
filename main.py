@@ -15,6 +15,7 @@ action = {
     "sin": math.sin,
     "cos": math.cos,
     "tan": math.tan,
+    "log": math.log,
 }
 
 precedence = {
@@ -30,6 +31,8 @@ precedence = {
 
 
 def calc(s):
+    s = log_calc(s)
+    s = trig_calc(s)
     output = []
     operlist = []
     temp = ""
@@ -92,7 +95,7 @@ def calc(s):
     return stack
 
 
-def value_match(match):
+def value_match_1(match):
     func_name = match.group(1).lower()
     val = calc(match.group(2))[0]
     result = action[func_name](val)
@@ -101,10 +104,24 @@ def value_match(match):
 
 def trig_calc(string):
     pattern = r"\b(sin|cos|tan)\s*\(\s*([^)]+?)\s*\)"
-    return re.sub(pattern, value_match, string)
+    return re.sub(pattern, value_match_1, string)
 
 
-expression = "(((5+3)*2-8+2^3*sin(5))*(-1))*(-1)"
+def value_match_2(match):
+    func_name = match.group(1).lower()
+    base = calc(match.group(2))[0]
+    val = calc(match.group(3))[0]
+    result = action[func_name](val, base)
+    return f"{result:.2f}"
+
+
+def log_calc(string):
+    pattern = r"\b(log)\s*\(\s*([^)]+?)\s*\)\s*\(\s*([^)]+?)\s*\)"
+    return re.sub(pattern, value_match_2, string)
+
+
+expression = "log100(10)"
+expression = log_calc(expression)
 expression = trig_calc(expression)
 
 print(calc(expression))
