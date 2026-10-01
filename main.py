@@ -16,6 +16,7 @@ action = {
     "cos": math.cos,
     "tan": math.tan,
 }
+
 precedence = {
     "+": 1,
     "-": 1,
@@ -23,53 +24,70 @@ precedence = {
     "/": 2,
     "%": 2,
     "^": 3,
+    "neg": 4,
+    "pos": 4,
 }
-str = "((5+3)*2-8+2^3*sin(5))*(-1)"
 
 
 def calc(s):
     output = []
     operlist = []
     temp = ""
-    for i in s:
+    expect_operand = True
+    for i in s.replace(" ", ""):
         if i.isdigit() or i == ".":
-            temp = temp + i
+            temp += i
+            expect_operand = False
         elif i == "(":
             operlist.append(i)
+            expect_operand = True
         elif i == ")":
             if temp:
                 output.append(float(temp))
                 temp = ""
-            while not operlist[-1] == "(":
+            while operlist and operlist[-1] != "(":
                 output.append(operlist.pop())
-            operlist.pop()
+            if operlist and operlist[-1] == "(":
+                operlist.pop()
+            expect_operand = False
         elif i in action.keys():
             if temp:
                 output.append(float(temp))
                 temp = ""
-            if not operlist:
-                operlist.append(i)
-                continue
-            if not operlist[-1] == "(":
-                while operlist and (precedence[operlist[-1]] >= precedence[i]):
-                    output.append(operlist.pop())
-                else:
-                    operlist.append(i)
+
+            if expect_operand and i in ["-", "+"]:
+                op = "neg" if i == "-" else "pos"
             else:
-                operlist.append(i)
+                op = i
+
+            while (
+                operlist
+                and operlist[-1] != "("
+                and precedence.get(operlist[-1], 0) >= precedence.get(op, 0)
+            ):
+                output.append(operlist.pop())
+
+            operlist.append(op)
+            expect_operand = True
+
     if temp:
         output.append(float(temp))
-    operlist.reverse()
-    output = output + operlist
+
+    while operlist:
+        output.append(operlist.pop())
 
     stack = []
     for i in output:
         if isinstance(i, float):
             stack.append(i)
         elif i in action.keys():
-            right = stack.pop()
-            left = stack.pop()
-            stack.append(action[i](left, right))
+            if i in ["neg", "pos", "abs"]:
+                val = stack.pop()
+                stack.append(action[i](val))
+            else:
+                right = stack.pop()
+                left = stack.pop()
+                stack.append(action[i](left, right))
 
     return stack
 
@@ -78,8 +96,6 @@ def value_match(match):
     func_name = match.group(1).lower()
     val = calc(match.group(2))[0]
     result = action[func_name](val)
-    if result < 0:
-        return f"(0-{abs(result):.2f})"
     return f"{result:.2f}"
 
 
@@ -88,6 +104,7 @@ def trig_calc(string):
     return re.sub(pattern, value_match, string)
 
 
-str = trig_calc(str)
-trig_calc(str)
-print(calc(str))
+expression = "(((5+3)*2-8+2^3*sin(5))*(-1))*(-1)"
+expression = trig_calc(expression)
+
+print(calc(expression))
