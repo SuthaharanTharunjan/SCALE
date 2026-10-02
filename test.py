@@ -3,12 +3,12 @@ import math
 import re
 
 NAME = r"""
-  __________________     _____  .____   _________  
- /   _____/\_   ___ \   /  _  \ |    |  \_   ___ \ 
- \_____  \ /    \  \/  /  /_\  \|    |  /    \  \/ 
- /        \\     \____/    |    \    |__\     \____
-/_______  / \______  /\____|__  /_______ \______  /
-        \/         \/         \/        \/      \/ 
+  __________________     _____  .____     ___________
+ /   _____/\_   ___ \   /  _  \ |    |    \_   _____/
+ \_____  \ /    \  \/  /  /_\  \|    |     |    __)_ 
+ /        \\     \____/    |    \    |___  |        \
+/_______  / \______  /\____|__  /_______ \/_______  /
+        \/         \/         \/        \/        \/ 
 """
 
 GREEN = "\033[92m"
@@ -80,10 +80,8 @@ precedence = {
 def rpn_creator(expression: str):
     output = []
     operlist = []
-    tokens = re.findall(
-        r"\d+\.\d+(?:[eE][-+]?\d+)?|\.\d+(?:[eE][-+]?\d+)?|\d+(?:[eE][-+]?\d+)?|[a-zA-Z]+|[^\s]",
-        expression,
-    )
+    pattern = r"\d+\.\d+(?:[eE][-+]?\d+)?|\.\d+(?:[eE][-+]?\d+)?|\d+(?:[eE][-+]?\d+)?|[a-zA-Z]+|[^\s]"
+    tokens = re.findall(pattern, expression)
     prev_token = None
     for token in tokens:
         if token in ("+", "-"):
@@ -180,9 +178,7 @@ def main():
     print("-" * 60)
 
     while True:
-        expression = input(
-            f"{BLUE1}Expression (or 'quit' to exit){RESET} : {BLUE2}"
-        ).strip()
+        expression = input(f"{BLUE2}Expression{RESET} : {BLUE1}").strip()
         print(RESET, end="")
 
         if expression.lower() in ("quit", "exit", "q"):
