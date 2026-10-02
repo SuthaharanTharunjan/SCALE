@@ -132,7 +132,6 @@ def peeler(expression: str):
     index_2 = None
     for i in range(len(expression)):
         if expression[i] == "(":
-            depth += 1
             index_1 = i
         elif expression[i] == ")":
             index_2 = i
