@@ -2,6 +2,21 @@ import operator
 import math
 import re
 
+NAME = r"""
+  __________________     _____  .____   _________  
+ /   _____/\_   ___ \   /  _  \ |    |  \_   ___ \ 
+ \_____  \ /    \  \/  /  /_\  \|    |  /    \  \/ 
+ /        \\     \____/    |    \    |__\     \____
+/_______  / \______  /\____|__  /_______ \______  /
+        \/         \/         \/        \/      \/ 
+"""
+
+GREEN = "\033[92m"
+RESET = "\033[0m"
+RED = "\033[91m"
+GREEN2 = "\033[38;2;70;185;155m"
+BLUE1 = "\033[38;5;67m"
+BLUE2 = "\033[38;5;75m"
 action = {
     "+": operator.add,
     "-": operator.sub,
@@ -28,6 +43,8 @@ action = {
     "log": math.log,
     "ln": math.log,
     "lg": math.log10,
+    "exp": math.exp,
+    "sqrt": math.sqrt,
 }
 
 precedence = {
@@ -55,23 +72,25 @@ precedence = {
     "log": 4,
     "lg": 4,
     "ln": 4,
+    "exp": 4,
+    "sqrt": 4,
 }
 
 
 def rpn_creator(expression: str):
     output = []
     operlist = []
-    tokens = re.findall(r"\d+\.\d+|\d+|[a-zA-Z]+|[^\s]", expression)
+    tokens = re.findall(
+        r"\d+\.\d+(?:[eE][-+]?\d+)?|\.\d+(?:[eE][-+]?\d+)?|\d+(?:[eE][-+]?\d+)?|[a-zA-Z]+|[^\s]",
+        expression,
+    )
     prev_token = None
     for token in tokens:
         if token in ("+", "-"):
             if prev_token is None or prev_token in action:
                 token = "pos" if token == "+" else "neg"
 
-        if token.replace(".", "").isdigit():
-            output.append(float(token))
-
-        elif token in action:
+        if token in action:
             if precedence[token] == 4 or token == "^":
                 while operlist and (precedence[token] < precedence[operlist[-1]]):
                     output.append(operlist.pop())
@@ -80,6 +99,16 @@ def rpn_creator(expression: str):
                     output.append(operlist.pop())
 
             operlist.append(token)
+        else:
+            if token == "e":
+                output.append(math.e)
+            elif token == "pi":
+                output.append(math.pi)
+            else:
+                try:
+                    output.append(float(token))
+                except ValueError:
+                    pass
 
         prev_token = token
 
@@ -113,6 +142,8 @@ def evaluate_rpn(rpn_list: list):
                 "pos",
                 "lg",
                 "ln",
+                "exp",
+                "sqrt",
             ):
                 val = stack.pop()
                 stack.append(action[i](val))
@@ -136,18 +167,43 @@ def peeler(expression: str):
         elif expression[i] == ")":
             index_2 = i
             break
+
+    if index_1 is None or index_2 is None:
+        raise ValueError("Unbalanced parentheses in expression")
+
     sub_expression = expression[index_1 + 1 : index_2]
-    return sub_expression
+    return sub_expression, index_1, index_2
 
 
 def main():
-    expression = input("Enter the expression : ").strip()
-    while ("(" in expression) or (")" in expression):
-        sub_expression = peeler(expression)
-        sub_expression_m = evaluate_rpn(rpn_creator(sub_expression))
-        expression = expression.replace(f"({sub_expression})", sub_expression_m)
-        print(expression)
-    print(evaluate_rpn(rpn_creator(expression)))
+    print(NAME)
+    print("-" * 60)
+
+    while True:
+        expression = input(
+            f"{BLUE1}Expression (or 'quit' to exit){RESET} : {BLUE2}"
+        ).strip()
+        print(RESET, end="")
+
+        if expression.lower() in ("quit", "exit", "q"):
+            print("Goodbye!")
+            break
+
+        print("-" * 60)
+        try:
+            while ("(" in expression) or (")" in expression):
+                sub_expression, idx_start, idx_end = peeler(expression)
+                sub_expression_m = evaluate_rpn(rpn_creator(sub_expression))
+                expression = (
+                    expression[:idx_start]
+                    + sub_expression_m
+                    + expression[idx_end + 1 :]
+                )
+                print(f"{GREEN2} = {expression}{RESET}")
+            print(f"{GREEN} = {evaluate_rpn(rpn_creator(expression))}{RESET}")
+        except Exception as e:
+            print(f"{RED}Error : {e}{RESET}")
+        print("-" * 60)
 
 
 if __name__ == "__main__":
