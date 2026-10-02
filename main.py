@@ -178,14 +178,18 @@ def main():
     print("-" * 60)
 
     while True:
-        expression = input(f"{BLUE2}Expression{RESET} : {BLUE1}").strip()
+        try:
+            expression = input(f"{BLUE2}Expression{RESET} : {BLUE1}").strip()
+        except KeyboardInterrupt, EOFError:
+            print(f"{RED}Exiting...{RESET}")
+            break
         print(RESET, end="")
 
         if expression.lower() in ("quit", "exit", "q"):
-            print("Goodbye!")
+            print(f"{RED}Exiting...{RESET}")
             break
 
-        print("-" * 60)
+        print("-" * 65)
         try:
             while ("(" in expression) or (")" in expression):
                 sub_expression, idx_start, idx_end = peeler(expression)
@@ -199,7 +203,7 @@ def main():
             print(f"{GREEN} = {evaluate_rpn(rpn_creator(expression))}{RESET}")
         except Exception as e:
             print(f"{RED}Error : {e}{RESET}")
-        print("-" * 60)
+        print("-" * 65)
 
 
 if __name__ == "__main__":
