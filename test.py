@@ -13,9 +13,21 @@ action = {
     "pos": operator.pos,
     "abs": operator.abs,
     "sin": math.sin,
+    "sinh": math.sinh,
+    "asin": math.asin,
+    "asinh": math.asinh,
     "cos": math.cos,
+    "cosh": math.cosh,
+    "acos": math.acos,
+    "acosh": math.acosh,
     "tan": math.tan,
+    "tanh": math.tanh,
+    "atan": math.atan,
+    # "atan2": math.atan2,
+    "atanh": math.atanh,
     "log": math.log,
+    "ln": math.log,
+    "lg": math.log10,
 }
 
 precedence = {
@@ -32,11 +44,12 @@ precedence = {
     "cos": 4,
     "tan": 4,
     "log": 4,
+    "lg": 4,
+    "ln": 4,
 }
 
 
 def rpn_creator(expression: str):
-    expression = expression.replace(" ", "")
     output = []
     operlist = []
     tokens = re.findall(r"\d+\.\d+|\d+|[a-zA-Z]+|[^\s]", expression)
@@ -50,8 +63,12 @@ def rpn_creator(expression: str):
             output.append(float(token))
 
         elif token in action:
-            while operlist and (precedence[token] <= precedence[operlist[-1]]):
-                output.append(operlist.pop())
+            if precedence[token] == 4 or token == "^":
+                while operlist and (precedence[token] < precedence[operlist[-1]]):
+                    output.append(operlist.pop())
+            else:
+                while operlist and (precedence[token] <= precedence[operlist[-1]]):
+                    output.append(operlist.pop())
 
             operlist.append(token)
 
@@ -69,20 +86,39 @@ def evaluate_rpn(rpn_list: list):
         if isinstance(i, float):
             stack.append(i)
         elif i in action.keys():
-            if i in ("sin", "cos", "tan", "abs", "neg", "pos"):
+            if i in (
+                "sin",
+                "sinh",
+                "asin",
+                "asinh",
+                "cos",
+                "cosh",
+                "acos",
+                "acosh",
+                "tan",
+                "tanh",
+                "atan",
+                "atanh",
+                "abs",
+                "neg",
+                "pos",
+                "lg",
+                "ln",
+            ):
                 val = stack.pop()
                 stack.append(action[i](val))
             else:
                 right = stack.pop()
                 left = stack.pop()
-                stack.append(action[i](left, right))
+                if i == "log":
+                    stack.append(action[i](right, left))
+                else:
+                    stack.append(action[i](left, right))
 
     return str(stack[0]) if stack else "0.0"
 
 
 def peeler(expression: str):
-    expression = expression.replace(" ", "")
-    depth = 0
     index_1 = None
     index_2 = None
     for i in range(len(expression)):
@@ -90,7 +126,6 @@ def peeler(expression: str):
             depth += 1
             index_1 = i
         elif expression[i] == ")":
-            depth -= 1
             index_2 = i
             break
     sub_expression = expression[index_1 + 1 : index_2]
