@@ -2,6 +2,21 @@ import operator
 import math
 import re
 
+NAME = r"""
+  __________________     _____  .____     ___________
+ /   _____/\_   ___ \   /  _  \ |    |    \_   _____/
+ \_____  \ /    \  \/  /  /_\  \|    |     |    __)_ 
+ /        \\     \____/    |    \    |___  |        \
+/_______  / \______  /\____|__  /_______ \/_______  /
+        \/         \/         \/        \/        \/ 
+"""
+
+GREEN = "\033[92m"
+RESET = "\033[0m"
+RED = "\033[91m"
+GREEN2 = "\033[38;2;70;185;155m"
+BLUE1 = "\033[38;5;67m"
+BLUE2 = "\033[38;5;75m"
 action = {
     "+": operator.add,
     "-": operator.sub,
@@ -13,9 +28,23 @@ action = {
     "pos": operator.pos,
     "abs": operator.abs,
     "sin": math.sin,
+    "sinh": math.sinh,
+    "asin": math.asin,
+    "asinh": math.asinh,
     "cos": math.cos,
+    "cosh": math.cosh,
+    "acos": math.acos,
+    "acosh": math.acosh,
     "tan": math.tan,
+    "tanh": math.tanh,
+    "atan": math.atan,
+    # "atan2": math.atan2,
+    "atanh": math.atanh,
     "log": math.log,
+    "ln": math.log,
+    "lg": math.log10,
+    "exp": math.exp,
+    "sqrt": math.sqrt,
 }
 
 precedence = {
@@ -27,129 +56,150 @@ precedence = {
     "^": 3,
     "neg": 4,
     "pos": 4,
+    "abs": 4,
+    "sin": 4,
+    "sinh": 4,
+    "asin": 4,
+    "asinh": 4,
+    "cos": 4,
+    "cosh": 4,
+    "acos": 4,
+    "acosh": 4,
+    "tan": 4,
+    "tanh": 4,
+    "atan": 4,
+    "atanh": 4,
+    "log": 4,
+    "lg": 4,
+    "ln": 4,
+    "exp": 4,
+    "sqrt": 4,
 }
 
 
-def calc(s):
-    if not s or not str(s).strip():
-        return []
-
-    s = log_calc(str(s))
-    s = trig_calc(s)
+def rpn_creator(expression: str):
     output = []
     operlist = []
-    temp = ""
-    expect_operand = True
+    pattern = r"\d+\.\d+(?:[eE][-+]?\d+)?|\.\d+(?:[eE][-+]?\d+)?|\d+(?:[eE][-+]?\d+)?|[a-zA-Z]+|[^\s]"
+    tokens = re.findall(pattern, expression)
+    prev_token = None
+    for token in tokens:
+        if token in ("+", "-"):
+            if prev_token is None or prev_token in action:
+                token = "pos" if token == "+" else "neg"
 
-    for i in s.replace(" ", ""):
-        if i.isdigit() or i == ".":
-            temp += i
-            expect_operand = False
-        elif i == "(":
-            operlist.append(i)
-            expect_operand = True
-        elif i == ")":
-            if temp:
-                output.append(float(temp))
-                temp = ""
-            while operlist and operlist[-1] != "(":
-                output.append(operlist.pop())
-            if operlist and operlist[-1] == "(":
-                operlist.pop()
-            expect_operand = False
-        elif i in action.keys():
-            if temp:
-                output.append(float(temp))
-                temp = ""
-
-            if expect_operand and i in ["-", "+"]:
-                op = "neg" if i == "-" else "pos"
+        if token in action:
+            if precedence[token] == 4 or token == "^":
+                while operlist and (precedence[token] < precedence[operlist[-1]]):
+                    output.append(operlist.pop())
             else:
-                op = i
+                while operlist and (precedence[token] <= precedence[operlist[-1]]):
+                    output.append(operlist.pop())
 
-            while operlist and operlist[-1] != "(":
-                prev_op = operlist[-1]
-                if op == "^":
-                    if precedence.get(prev_op, 0) > precedence.get(op, 0):
-                        output.append(operlist.pop())
-                    else:
-                        break
-                else:
-                    if precedence.get(prev_op, 0) >= precedence.get(op, 0):
-                        output.append(operlist.pop())
-                    else:
-                        break
+            operlist.append(token)
+        else:
+            if token == "e":
+                output.append(math.e)
+            elif token == "pi":
+                output.append(math.pi)
+            else:
+                try:
+                    output.append(float(token))
+                except ValueError:
+                    pass
 
-            operlist.append(op)
-            expect_operand = True
-
-    if temp:
-        output.append(float(temp))
+        prev_token = token
 
     while operlist:
         output.append(operlist.pop())
 
+    return output
+
+
+def evaluate_rpn(rpn_list: list):
     stack = []
-    for i in output:
+    for i in rpn_list:
         if isinstance(i, float):
             stack.append(i)
         elif i in action.keys():
-            if i in ["neg", "pos", "abs"]:
+            if i in (
+                "sin",
+                "sinh",
+                "asin",
+                "asinh",
+                "cos",
+                "cosh",
+                "acos",
+                "acosh",
+                "tan",
+                "tanh",
+                "atan",
+                "atanh",
+                "abs",
+                "neg",
+                "pos",
+                "lg",
+                "ln",
+                "exp",
+                "sqrt",
+            ):
                 val = stack.pop()
                 stack.append(action[i](val))
             else:
                 right = stack.pop()
                 left = stack.pop()
-                stack.append(action[i](left, right))
+                if i == "log":
+                    stack.append(action[i](right, left))
+                else:
+                    stack.append(action[i](left, right))
 
-    return stack
-
-
-def value_match_1(match):
-    func_name = match.group(1).lower()
-    val_stack = calc(match.group(2))
-    if not val_stack:
-        raise ValueError(f"Empty argument in {func_name}")
-    val = val_stack[0]
-    result = action[func_name](val)
-    return f"{result}"
+    return str(stack[0]) if stack else "0.0"
 
 
-def trig_calc(string):
-    pattern = r"\b(sin|cos|tan)\s*\(([^()]+)\)"
-    while re.search(pattern, string):
-        string = re.sub(pattern, value_match_1, string)
-    return string
+def peeler(expression: str):
+    index_1 = None
+    index_2 = None
+    for i in range(len(expression)):
+        if expression[i] == "(":
+            index_1 = i
+        elif expression[i] == ")":
+            index_2 = i
+            break
 
+    if index_1 is None or index_2 is None:
+        raise ValueError("Unbalanced parentheses in expression")
 
-def value_match_2(match):
-    base_stack = calc(match.group(2))
-    val_stack = calc(match.group(3))
-
-    if not base_stack or not val_stack:
-        raise ValueError("Invalid logarithmic expression")
-
-    base = base_stack[0]
-    val = val_stack[0]
-
-    result = action["log"](val, base)
-    return f"{result}"
-
-
-def log_calc(string):
-    pattern = r"\b(log)\s*\(([^()]+)\)\s*\(([^()]+)\)"
-    while re.search(pattern, string):
-        string = re.sub(pattern, value_match_2, string)
-    return string
+    sub_expression = expression[index_1 + 1 : index_2]
+    return sub_expression, index_1, index_2
 
 
 def main():
-    expression = input("Enter the expression : ")
-    try:
-        result = calc(expression)
-        print(result[0] if result else "No input provided.")
-    except Exception as e:
-        print(f"Error in expression : {e}")
+    print(NAME)
+    print("-" * 60)
+
+    while True:
+        expression = input(f"{BLUE2}Expression{RESET} : {BLUE1}").strip()
+        print(RESET, end="")
+
+        if expression.lower() in ("quit", "exit", "q"):
+            print("Goodbye!")
+            break
+
+        print("-" * 60)
+        try:
+            while ("(" in expression) or (")" in expression):
+                sub_expression, idx_start, idx_end = peeler(expression)
+                sub_expression_m = evaluate_rpn(rpn_creator(sub_expression))
+                expression = (
+                    expression[:idx_start]
+                    + sub_expression_m
+                    + expression[idx_end + 1 :]
+                )
+                print(f"{GREEN2} = {expression}{RESET}")
+            print(f"{GREEN} = {evaluate_rpn(rpn_creator(expression))}{RESET}")
+        except Exception as e:
+            print(f"{RED}Error : {e}{RESET}")
+        print("-" * 60)
 
 
 if __name__ == "__main__":
