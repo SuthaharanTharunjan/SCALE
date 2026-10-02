@@ -196,7 +196,7 @@ def main():
     while True:
         try:
             expression = input(f"{BLUE2}Expression{RESET} : {BLUE1}").strip()
-        except KeyboardInterrupt, EOFError:
+        except (KeyboardInterrupt, EOFError):
             print(f"{RED}Exiting...{RESET}")
             break
         print(RESET, end="")
