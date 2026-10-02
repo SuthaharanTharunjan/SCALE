@@ -3,12 +3,12 @@ import math
 import re
 
 NAME = r"""
-  __________________     _____  .____     ___________
- /   _____/\_   ___ \   /  _  \ |    |    \_   _____/
- \_____  \ /    \  \/  /  /_\  \|    |     |    __)_ 
- /        \\     \____/    |    \    |___  |        \
-/_______  / \______  /\____|__  /_______ \/_______  /
-        \/         \/         \/        \/        \/ 
+   __________________     _____  .____     ___________
+  /   _____/\_   ___ \   /  _  \ |    |    \_   _____/
+  \_____  \ /    \  \/  /  /_\  \|    |     |    __)_ 
+  /        \\     \____/    |    \    |___  |        \
+ /_______  / \______  /\____|__  /_______ \/_______  /
+         \/         \/         \/        \/        \/ 
 """
 
 GREEN = "\033[92m"
@@ -45,6 +45,8 @@ action = {
     "lg": math.log10,
     "exp": math.exp,
     "sqrt": math.sqrt,
+    "d": math.radians,
+    "r": math.degrees,
 }
 
 precedence = {
@@ -74,6 +76,8 @@ precedence = {
     "ln": 4,
     "exp": 4,
     "sqrt": 4,
+    "d": 4,
+    "r": 4,
 }
 
 
@@ -142,6 +146,8 @@ def evaluate_rpn(rpn_list: list):
                 "ln",
                 "exp",
                 "sqrt",
+                "d",
+                "r",
             ):
                 val = stack.pop()
                 stack.append(action[i](val))
@@ -173,9 +179,19 @@ def peeler(expression: str):
     return sub_expression, index_1, index_2
 
 
+def format_display(val: float) -> str:
+    if abs(val) < 1e-12:
+        val = 0.0
+    elif abs(val - round(val)) < 1e-12:
+        val = float(round(val))
+    else:
+        val = round(val, 12)
+    return f"{val:g}"
+
+
 def main():
     print(NAME)
-    print("-" * 60)
+    print("-" * 65)
 
     while True:
         try:
@@ -200,7 +216,10 @@ def main():
                     + expression[idx_end + 1 :]
                 )
                 print(f"{GREEN2} = {expression}{RESET}")
-            print(f"{GREEN} = {evaluate_rpn(rpn_creator(expression))}{RESET}")
+            ans = evaluate_rpn(rpn_creator(expression))
+            print(f"{GREEN2} = {ans}{RESET}")
+            formatted_ans = format_display(float(ans))
+            print(f"{GREEN} ≈ {formatted_ans}{RESET}")
         except Exception as e:
             print(f"{RED}Error : {e}{RESET}")
         print("-" * 65)
