@@ -14,9 +14,11 @@ NAME = r"""
 GREEN = "\033[92m"
 RESET = "\033[0m"
 RED = "\033[91m"
-GREEN2 = "\033[38;2;70;185;155m"
-BLUE1 = "\033[38;5;67m"
+GOLD = "\033[38;2;245;166;35m"
+BLUE1 = "\033[38;5;117m"
 BLUE2 = "\033[38;5;75m"
+GREY = "\033[38;2;100;120;140m"
+
 action = {
     "+": operator.add,
     "-": operator.sub,
@@ -191,21 +193,22 @@ def format_display(val: float) -> str:
 
 def main():
     print(NAME)
-    print("-" * 65)
+    print(f"{GREY}-{RESET}" * 65)
 
     while True:
         try:
             expression = input(f"{BLUE2}Expression{RESET} : {BLUE1}").strip()
+            print(RESET, end="")
         except (KeyboardInterrupt, EOFError):
-            print(f"{RED}Exiting...{RESET}")
-            break
-        print(RESET, end="")
+            print(f"{BLUE1}quit{RESET}")
+            expression = "quit"
 
         if expression.lower() in ("quit", "exit", "q"):
+            print(f"{GREY}-{RESET}" * 65)
             print(f"{RED}Exiting...{RESET}")
             break
 
-        print("-" * 65)
+        print(f"{GREY}-{RESET}" * 65)
         try:
             while ("(" in expression) or (")" in expression):
                 sub_expression, idx_start, idx_end = peeler(expression)
@@ -215,14 +218,14 @@ def main():
                     + sub_expression_m
                     + expression[idx_end + 1 :]
                 )
-                print(f"{GREEN2} = {expression}{RESET}")
+                print(f"{GOLD} = {expression}{RESET}")
             ans = evaluate_rpn(rpn_creator(expression))
-            print(f"{GREEN2} = {ans}{RESET}")
+            print(f"{GOLD} = {ans}{RESET}")
             formatted_ans = format_display(float(ans))
             print(f"{GREEN} ≈ {formatted_ans}{RESET}")
         except Exception as e:
             print(f"{RED}Error : {e}{RESET}")
-        print("-" * 65)
+        print(f"{GREY}-{RESET}" * 65)
 
 
 if __name__ == "__main__":
