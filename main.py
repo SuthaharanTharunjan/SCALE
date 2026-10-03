@@ -4,17 +4,18 @@ import re
 
 NAME = r"""
    __________________     _____  .____     ___________
-  /   _____/\_   ___ \   /  _  \ |    |    \_   _____/
-  \_____  \ /    \  \/  /  /_\  \|    |     |    __)_ 
-  /        \\     \____/    |    \    |___  |        \
- /_______  / \______  /\____|__  /_______ \/_______  /
+  /===_____/\_===___ \   /==_==\ |====|    \_===_____/
+  \_____==\ /====\  \/  /==/_\==\|====|     |====__)_ 
+  /========\\=====\____/====|====\====|___  |========\
+ /_______==/ \______==/\____|__==/_______ \/_______==/
          \/         \/         \/        \/        \/ 
 """
-RED = "\033[38;2;255;56;100m"  # Neon Sunset Rose
-GREEN = "\033[38;2;38;230;136m"  # Phosphor Arcade Mint
-BLUE = "\033[38;2;74;144;255m"  # Laser Beam Blue
-GREY = "\033[38;2;88;80;105m"  # Smoky VHS Shadow (Mauve)
-YELLOW = "\033[38;2;255;184;77m"  # Neon Sunset Gold (Operators / Functions)
+
+RED = "\033[38;2;255;0;127m"  # Hot Magenta (Errors/Exiting)
+GREEN = "\033[38;2;46;204;113m"  # Natural Emerald (Startup)
+BLUE = "\033[38;2;52;152;219m"  # Clear Sky Blue (Input/Final Answer)
+GREY = "\033[38;2;77;77;115m"  # Deep Violet-Slate (Dividers)
+VIOLET = "\033[38;2;179;136;255m"  # Electric Violet (Steps)
 RESET = "\033[0m"
 
 action = {
@@ -181,10 +182,14 @@ def peeler(expression: str):
     return sub_expression, index_1, index_2
 
 
+FUNC_PATTERN = re.compile(
+    r"\b(?:sin|sinh|asin|asinh|cos|cosh|acos|acosh|tan|tanh|atan|atanh|log|ln|lg|exp|sqrt|abs|d|r)\b|[+/*%^\-]"
+)
+
+
 def colorize_numbers(text: str, base_color: str) -> str:
-    """Wraps numbers (including scientific notation and decimals) in NUM_COLOR."""
-    pattern = r"\d+\.\d+(?:[eE][-+]?\d+)?|\.\d+(?:[eE][-+]?\d+)?|\d+(?:[eE][-+]?\d+)?"
-    return re.sub(pattern, lambda m: f"{RESET}{m.group(0)}{base_color}", text)
+    colored_text = FUNC_PATTERN.sub(lambda m: f"{base_color}{m.group(0)}{RESET}", text)
+    return f"{RESET}{colored_text}"
 
 
 def format_display(val: float) -> str:
@@ -226,7 +231,7 @@ def main():
             pattern, lambda m: m.group(1) or f"{m.group(0)}*", expression
         )
 
-        print(f"{YELLOW} = {colorize_numbers(expression, YELLOW)}{RESET}")
+        print(f"{GREY} = {RESET}{VIOLET}{colorize_numbers(expression, VIOLET)}{RESET}")
 
         try:
             while ("(" in expression) or (")" in expression):
@@ -237,13 +242,15 @@ def main():
                     + f"{sub_expression_m}"
                     + expression[idx_end + 1 :]
                 )
-                print(f"{YELLOW} = {colorize_numbers(expression, YELLOW)}{RESET}")
+                print(
+                    f"{GREY} = {RESET}{VIOLET}{colorize_numbers(expression, VIOLET)}{RESET}"
+                )
 
             ans = evaluate_rpn(rpn_creator(expression))
-            print(f"{YELLOW} = {RESET}{ans}")
+            print(f"{GREY} = {RESET}{ans}")
 
             formatted_ans = format_display(float(ans))
-            print(f"{YELLOW} ≈ {BLUE}{formatted_ans}{RESET}")
+            print(f"{GREY} ≈ {BLUE}{formatted_ans}{RESET}")
 
         except IndexError:
             print(f"{RED}Error : Invalid syntax or missing operands{RESET}")
