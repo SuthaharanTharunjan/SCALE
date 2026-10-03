@@ -10,11 +10,11 @@ NAME = r"""
  /_______  / \______  /\____|__  /_______ \/_______  /
          \/         \/         \/        \/        \/ 
 """
-
-RED = "\033[91m"
-GREEN = "\033[92m"
-BLUE = "\033[38;2;170;190;215m"
-GREY = "\033[38;2;145;155;165m"
+RED = "\033[38;2;255;56;100m"  # Neon Sunset Rose
+GREEN = "\033[38;2;38;230;136m"  # Phosphor Arcade Mint
+BLUE = "\033[38;2;74;144;255m"  # Laser Beam Blue
+GREY = "\033[38;2;88;80;105m"  # Smoky VHS Shadow (Mauve)
+YELLOW = "\033[38;2;255;184;77m"  # Neon Sunset Gold (Operators / Functions)
 RESET = "\033[0m"
 
 action = {
@@ -226,7 +226,7 @@ def main():
             pattern, lambda m: m.group(1) or f"{m.group(0)}*", expression
         )
 
-        print(f"{GREY} = {colorize_numbers(expression, GREY)}{RESET}")
+        print(f"{YELLOW} = {colorize_numbers(expression, YELLOW)}{RESET}")
 
         try:
             while ("(" in expression) or (")" in expression):
@@ -237,13 +237,13 @@ def main():
                     + f"{sub_expression_m}"
                     + expression[idx_end + 1 :]
                 )
-                print(f"{GREY} = {colorize_numbers(expression, GREY)}{RESET}")
+                print(f"{YELLOW} = {colorize_numbers(expression, YELLOW)}{RESET}")
 
             ans = evaluate_rpn(rpn_creator(expression))
-            print(f"{GREY} = {RESET}{ans}")
+            print(f"{YELLOW} = {RESET}{ans}")
 
             formatted_ans = format_display(float(ans))
-            print(f"{GREY} ≈ {RESET}{formatted_ans}")
+            print(f"{YELLOW} ≈ {BLUE}{formatted_ans}{RESET}")
 
         except IndexError:
             print(f"{RED}Error : Invalid syntax or missing operands{RESET}")
