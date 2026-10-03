@@ -51,7 +51,7 @@ If you are passing an **expression** (a calculation) into a function like `sin`,
 * ✅ **Correct:** `sin(2 + 3)` (Evaluates as: the sine of 5)
 
 ### 2. Explicit Multiplication is Recomended
-The calculator **does support implicit multiplication**. but explicitly using the `*` operator is recommended.
+The calculator **does support implicit multiplication** but explicitly using the `*` operator is recommended.
 
 * ✅ **Correct:** `(894)(15)` or `5(2+3)`
 * ✅ **Correct:** `(894)*(15)` or `5*(2+3)` *(Recomended)*
