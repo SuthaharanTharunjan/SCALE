@@ -50,11 +50,11 @@ If you are passing an **expression** (a calculation) into a function like `sin`,
 * ❌ **Incorrect:** `sin 2 + 3` (Evaluates as: the sine of 2, plus 3)
 * ✅ **Correct:** `sin(2 + 3)` (Evaluates as: the sine of 5)
 
-### 2. Explicit Multiplication is Required
+### 2. Explicit Multiplication is Recomended
 The calculator **does not support implicit multiplication**. You must explicitly use the `*` operator.
 
-* ❌ **Incorrect:** `(894)(15)` or `5(2+3)`
-* ✅ **Correct:** `(894)*(15)` or `5*(2+3)`
+* ✅ **Correct:** `(894)(15)` or `5(2+3)`
+* ✅ **Correct:** `(894)*(15)` or `5*(2+3)` *(Recomended)*
 
 ### 3. Logarithm Syntax
 To use a logarithm with a custom base, the syntax strictly follows: `log<base> <value>`. Notice that there is **no space** between `log` and the base, but there **is a space** before the value. 

@@ -11,13 +11,11 @@ NAME = r"""
          \/         \/         \/        \/        \/ 
 """
 
-GREEN = "\033[92m"
-RESET = "\033[0m"
 RED = "\033[91m"
-GOLD = "\033[38;2;245;166;35m"
-BLUE1 = "\033[38;5;117m"
-BLUE2 = "\033[38;5;75m"
-GREY = "\033[38;2;100;120;140m"
+GREEN = "\033[92m"
+BLUE = "\033[38;2;170;190;215m"
+GREY = "\033[38;2;145;155;165m"
+RESET = "\033[0m"
 
 action = {
     "+": operator.add,
@@ -82,6 +80,30 @@ precedence = {
     "r": 4,
 }
 
+single_arg_operators = (
+    "sin",
+    "sinh",
+    "asin",
+    "asinh",
+    "cos",
+    "cosh",
+    "acos",
+    "acosh",
+    "tan",
+    "tanh",
+    "atan",
+    "atanh",
+    "abs",
+    "neg",
+    "pos",
+    "lg",
+    "ln",
+    "exp",
+    "sqrt",
+    "d",
+    "r",
+)
+
 
 def rpn_creator(expression: str):
     output = []
@@ -128,29 +150,7 @@ def evaluate_rpn(rpn_list: list):
         if isinstance(i, float):
             stack.append(i)
         elif i in action.keys():
-            if i in (
-                "sin",
-                "sinh",
-                "asin",
-                "asinh",
-                "cos",
-                "cosh",
-                "acos",
-                "acosh",
-                "tan",
-                "tanh",
-                "atan",
-                "atanh",
-                "abs",
-                "neg",
-                "pos",
-                "lg",
-                "ln",
-                "exp",
-                "sqrt",
-                "d",
-                "r",
-            ):
+            if i in single_arg_operators:
                 val = stack.pop()
                 stack.append(action[i](val))
             else:
@@ -181,6 +181,12 @@ def peeler(expression: str):
     return sub_expression, index_1, index_2
 
 
+def colorize_numbers(text: str, base_color: str) -> str:
+    """Wraps numbers (including scientific notation and decimals) in NUM_COLOR."""
+    pattern = r"\d+\.\d+(?:[eE][-+]?\d+)?|\.\d+(?:[eE][-+]?\d+)?|\d+(?:[eE][-+]?\d+)?"
+    return re.sub(pattern, lambda m: f"{RESET}{m.group(0)}{base_color}", text)
+
+
 def format_display(val: float) -> str:
     if abs(val) < 1e-12:
         val = 0.0
@@ -193,14 +199,15 @@ def format_display(val: float) -> str:
 
 def main():
     print(NAME)
+    print(f"{GREEN}Starting...{RESET}")
     print(f"{GREY}-{RESET}" * 65)
 
     while True:
         try:
-            expression = input(f"{BLUE2}Expression{RESET} : {BLUE1}").strip()
+            expression = input(f"Expression : {BLUE}").strip()
             print(RESET, end="")
         except (KeyboardInterrupt, EOFError):
-            print(f"{BLUE1}quit{RESET}")
+            print(f"{BLUE}quit{RESET}")
             expression = "quit"
 
         if not expression:
@@ -218,7 +225,8 @@ def main():
         expression = re.sub(
             pattern, lambda m: m.group(1) or f"{m.group(0)}*", expression
         )
-        print(f"{GOLD} = {expression}{RESET}")
+
+        print(f"{GREY} = {colorize_numbers(expression, GREY)}{RESET}")
 
         try:
             while ("(" in expression) or (")" in expression):
@@ -229,11 +237,13 @@ def main():
                     + f"{sub_expression_m}"
                     + expression[idx_end + 1 :]
                 )
-                print(f"{GOLD} = {expression}{RESET}")
+                print(f"{GREY} = {colorize_numbers(expression, GREY)}{RESET}")
+
             ans = evaluate_rpn(rpn_creator(expression))
-            print(f"{GOLD} = {ans}{RESET}")
+            print(f"{GREY} = {RESET}{ans}")
+
             formatted_ans = format_display(float(ans))
-            print(f"{GREEN} ≈ {formatted_ans}{RESET}")
+            print(f"{GREY} ≈ {RESET}{formatted_ans}")
 
         except IndexError:
             print(f"{RED}Error : Invalid syntax or missing operands{RESET}")
