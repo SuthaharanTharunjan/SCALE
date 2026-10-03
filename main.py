@@ -203,19 +203,30 @@ def main():
             print(f"{BLUE1}quit{RESET}")
             expression = "quit"
 
-        if expression.lower() in ("quit", "exit", "q"):
+        if not expression:
+            continue
+        expression = expression.lower()
+
+        if expression in ("quit", "exit", "q"):
             print(f"{GREY}-{RESET}" * 65)
             print(f"{RED}Exiting...{RESET}")
             break
 
         print(f"{GREY}-{RESET}" * 65)
+
+        pattern = r"(\blog\s*(?:[\d.]+|\([^)]+\))\s*)|(\d+|e|pi|\))\s*(?=\()|\)\s*(?=[a-zA-Z0-9])|(\d+)\s*(?=(?:pi|e)\b(?![+-]?\d))"
+        expression = re.sub(
+            pattern, lambda m: m.group(1) or f"{m.group(0)}*", expression
+        )
+        print(f"{GOLD} = {expression}{RESET}")
+
         try:
             while ("(" in expression) or (")" in expression):
                 sub_expression, idx_start, idx_end = peeler(expression)
                 sub_expression_m = evaluate_rpn(rpn_creator(sub_expression))
                 expression = (
                     expression[:idx_start]
-                    + sub_expression_m
+                    + f"{sub_expression_m}"
                     + expression[idx_end + 1 :]
                 )
                 print(f"{GOLD} = {expression}{RESET}")
@@ -223,6 +234,10 @@ def main():
             print(f"{GOLD} = {ans}{RESET}")
             formatted_ans = format_display(float(ans))
             print(f"{GREEN} ≈ {formatted_ans}{RESET}")
+
+        except IndexError:
+            print(f"{RED}Error : Invalid syntax or missing operands{RESET}")
+
         except Exception as e:
             print(f"{RED}Error : {e}{RESET}")
         print(f"{GREY}-{RESET}" * 65)
