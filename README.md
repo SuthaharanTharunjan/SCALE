@@ -11,8 +11,8 @@ It also features a step-by-step "peeler" that visually breaks down expressions b
 
 ### Prerequisites
 
-* Python 3.x installed on your system.
-* The `main.py` file downloaded and ready in your working directory.
+- Python 3.x installed on your system.
+- The `main.py` file downloaded and ready in your working directory.
 
 ### How to Run
 
@@ -45,31 +45,38 @@ Under the hood, SCALE processes your math problems using a combination of clever
 To ensure the calculator parses your expressions correctly, please follow these core syntax rules:
 
 ### 1. Mandatory Parentheses for Expressions in Functions
-If you are passing an **expression** (a calculation) into a function like `sin`, `cos`, or a `log` base/value, **you MUST wrap the expression in parentheses.** Otherwise, the program will calculate the function on the first number only, and *then* apply the rest of the equation.
 
-* ❌ **Incorrect:** `sin 2 + 3` (Evaluates as: the sine of 2, plus 3)
-* ✅ **Correct:** `sin(2 + 3)` (Evaluates as: the sine of 5)
+If you are passing an **expression** (a calculation) into a function like `sin`, `cos`, or a `log` base/value, **you MUST wrap the expression in parentheses.** Otherwise, the program will calculate the function on the first number only, and _then_ apply the rest of the equation.
+
+- ❌ **Incorrect:** `sin 2 + 3` (Evaluates as: the sine of 2, plus 3)
+- ✅ **Correct:** `sin(2 + 3)` (Evaluates as: the sine of 5)
+
+_(Note: Brackets are important when using constants like `sin(pi)`. Otherwise, it will be interpreted as `sinpi`, which is treated as an unknown function and will throw an error.)_
 
 ### 2. Explicit Multiplication is Recomended
+
 The calculator **does support implicit multiplication** but explicitly using the `*` operator is recommended.
 
-* ✅ **Correct:** `(894)(15)` or `5(2+3)`
-* ✅ **Correct:** `(894)*(15)` or `5*(2+3)` *(Recomended)*
+- ✅ **Correct:** `(894)(15)` or `5(2+3)`
+- ❌ **Incorrect:** `(894) (15)` or `5 (2+3)`
+- ✅ **Correct:** `(894)*(15)` or `5*(2+3)` _(Recomended)_
 
 ### 3. Logarithm Syntax
-To use a logarithm with a custom base, the syntax strictly follows: `log<base> <value>`. Notice that there is **no space** between `log` and the base, but there **is a space** before the value. 
 
-* **Custom Base (`log`):** To calculate $\log_6(23)$, type `log` immediately followed by the base (`6`), a space, and then the argument (`23`).
-  * ✅ **Syntax:** `log6 23`
-  * ✅ **Syntax with expressions:** `log6 (10 + 13)` or `log(2+4) (10+13)`
+To use a logarithm with a custom base, the syntax strictly follows: `log<base> <value>`. Notice that there is **no space** between `log` and the base, but there **is a space** before the value.
 
-* **Base 10 (`lg`):** Works like a standard function.
-  * ✅ **Syntax:** `lg(100)` or `lg100`
+- **Custom Base (`log`):** To calculate $\log_6(23)$, type `log` immediately followed by the base (`6`), a space, and then the argument (`23`).
+  - ✅ **Syntax:** `log6 23`
+  - ✅ **Syntax with expressions:** `log6 (10 + 13)` or `log(2+4) (10+13)`
 
-* **Natural Log (`ln`):** Works like a standard function.
-  * ✅ **Syntax:** `ln(5)` or `ln5`
+- **Base 10 (`lg`):** Works like a standard function.
+  - ✅ **Syntax:** `lg(100)` or `lg100`
 
-*(Note: you can add space after log or lg or ln like `log 6 23` or `lg 23` or `ln 23`)*
+- **Natural Log (`ln`):** Works like a standard function.
+  - ✅ **Syntax:** `ln(5)` or `ln5`
+
+_(Note: you can add space after log or lg or ln like `log 6 23` or `lg 23` or `ln 23`)_
+_(Note: Brackets are important when using constants like `ln(e)`. Otherwise, it will be interpreted as `lne`, which is treated as an unknown function and will throw an error.)_
 
 ---
 
@@ -79,22 +86,22 @@ Here are all the operations you can perform with SCALE:
 
 ### Basic Arithmetic
 
-| Operator | Description | Example |
-| :--- | :--- | :--- |
-| `+` | Addition | `5 + 3` |
-| `-` | Subtraction | `10 - 4` |
-| `*` | Multiplication | `6 * 7` |
-| `/` | Division | `20 / 4` |
-| `%` | Modulo (Remainder) | `10 % 3` |
-| `^` | Exponentiation (Power) | `2 ^ 3` |
+| Operator | Description            | Example  |
+| :------- | :--------------------- | :------- |
+| `+`      | Addition               | `5 + 3`  |
+| `-`      | Subtraction            | `10 - 4` |
+| `*`      | Multiplication         | `6 * 7`  |
+| `/`      | Division               | `20 / 4` |
+| `%`      | Modulo (Remainder)     | `10 % 3` |
+| `^`      | Exponentiation (Power) | `2 ^ 3`  |
 
 ### Unary & Math Functions
 
 You can use these with or without parentheses for single numbers (e.g., `abs(-5)` or `abs -5`), but remember Rule #1 if evaluating expressions!
 
-* **Absolute Value:** `abs`
-* **Square Root:** `sqrt`
-* **Unary Signs:** Built-in support for negative/positive signs (e.g., `-5 + 3`).
+- **Absolute Value:** `abs`
+- **Square Root:** `sqrt`
+- **Unary Signs:** Built-in support for negative/positive signs (e.g., `-5 + 3`).
 
 ---
 
@@ -103,31 +110,35 @@ You can use these with or without parentheses for single numbers (e.g., `abs(-5)
 Unlike a physical high school calculator, standard computer math libraries default to **Radians**. SCALE follows this standard, but includes built-in converters (`d` and `r`) to easily calculate in degrees.
 
 ### ⚠️ The Golden Rule of Angles
-* **Inputs:** All standard trigonometric functions (`sin`, `cos`, `tan`) assume your input is in **radians**.
-* **Outputs:** All inverse functions (`asin`, `acos`, `atan`) will return their results in **radians**.
+
+- **Inputs:** All standard trigonometric functions (`sin`, `cos`, `tan`) assume your input is in **radians**.
+- **Outputs:** All inverse functions (`asin`, `acos`, `atan`) will return their results in **radians**.
 
 ### 🔄 Input Converter: Degrees to Radians (`d`)
+
 The `d` operator is **for functions that normally take radians as input**. It converts your degree value into radians so the standard trig functions can compute them correctly.
 
 You can use it as `d(val)` or `d val`.
 
-* ❌ **Incorrect for 90 degrees:** `sin(90)` (Calculates the sine of 90 *radians*)
-* ✅ **Correct for 90 degrees:** `sin(d(90))` or `sin(d 90)` (Converts 90 degrees to $\frac{\pi}{2}$ radians, returning `1.0`)
-* ✅ **Using Math Inside:** `cos(d(30 * 2))` (Evaluates to `0.5`)
+- ❌ **Incorrect for 90 degrees:** `sin(90)` (Calculates the sine of 90 _radians_)
+- ✅ **Correct for 90 degrees:** `sin(d(90))` or `sin(d 90)` (Converts 90 degrees to $\frac{\pi}{2}$ radians, returning `1.0`)
+- ✅ **Using Math Inside:** `cos(d(30 * 2))` (Evaluates to `0.5`)
 
 ### 🔄 Output Converter: Radians to Degrees (`r`)
+
 Because inverse functions output their answers in radians, you need a way to read that answer in degrees. The `r` operator is **for converting radian outputs back into degrees**.
 
 You can use it as `r(val)` or `r val`.
 
-* ❌ **Without `r`:** `asin(1)` (Returns `1.57079...` which is $\frac{\pi}{2}$ radians)
-* ✅ **With `r`:** `r(asin(1))` or `r asin(1)` (Converts the radian answer back, returning `90.0` degrees)
-* ✅ **Direct conversion:** `r(pi)` (Returns `180.0`)
+- ❌ **Without `r`:** `asin(1)` (Returns `1.57079...` which is $\frac{\pi}{2}$ radians)
+- ✅ **With `r`:** `r(asin(1))` or `r asin(1)` (Converts the radian answer back, returning `90.0` degrees)
+- ✅ **Direct conversion:** `r(pi)` (Returns `180.0`)
 
 ### Supported Trig Functions
-* **Standard:** `sin`, `cos`, `tan`
-* **Inverse:** `asin`, `acos`, `atan`
-* **Hyperbolic:** `sinh`, `cosh`, `tanh`, `asinh`, `acosh`, `atanh`
+
+- **Standard:** `sin`, `cos`, `tan`
+- **Inverse:** `asin`, `acos`, `atan`
+- **Hyperbolic:** `sinh`, `cosh`, `tanh`, `asinh`, `acosh`, `atanh`
 
 ---
 
@@ -136,23 +147,31 @@ You can use it as `r(val)` or `r val`.
 It's easy to get confused by the letter "e" in mathematics and computing. Here is exactly how SCALE interprets them:
 
 ### 1. The Constant `e` (Euler's Number)
+
 When used by itself as a word, `e` represents Euler's number (approximately `2.71828...`).
-* **Example:** `2 * e` will evaluate to `~5.436`
+
+- **Example:** `2 * e` will evaluate to `~5.436`
 
 ### 2. The Constant `pi` ($\pi$)
+
 Similar to `e`, `pi` represents the mathematical constant Pi (approximately `3.14159...`).
-* **Example:** `sin(pi / 2)` will evaluate to `1.0`
+
+- **Example:** `sin(pi / 2)` will evaluate to `1.0`
 
 ### 3. The Function `exp` (Exponential)
+
 `exp` is a mathematical function that raises Euler's number `e` to the power of the number you provide ($e^x$).
-* **Example:** `exp(2)` or `exp 2` is exactly the same as calculating `e ^ 2` but more accurate.
+
+- **Example:** `exp(2)` or `exp 2` is exactly the same as calculating `e ^ 2` but more accurate.
 
 ### 4. Scientific Notation (e.g., `1.5e3`)
-When `e` or `E` is sandwiched tightly inside a number, it represents **Scientific Notation**, which means "times 10 to the power of". This is parsed as a *single number*, not an equation.
-* **Example 1:** `1.5e3` means $1.5 \times 10^3$, which evaluates to `1500.0`.
-* **Example 2:** `2E-4` means $2 \times 10^{-4}$, which evaluates to `0.0002`.
 
-*(Note the difference: `2e3` is scientific notation for `2000`, whereas `2 * e ^ 3` is math using Euler's number!)*
+When `e` or `E` is sandwiched tightly inside a number, it represents **Scientific Notation**, which means "times 10 to the power of". This is parsed as a _single number_, not an equation.
+
+- **Example 1:** `1.5e3` means $1.5 \times 10^3$, which evaluates to `1500.0`.
+- **Example 2:** `2E-4` means $2 \times 10^{-4}$, which evaluates to `0.0002`.
+
+_(Note the difference: `2e3` is scientific notation for `2000`, whereas `2 _ e ^ 3` is math using Euler's number!)\*
 
 ---
 
@@ -162,10 +181,11 @@ One of the coolest features of SCALE is how it handles parentheses. If you input
 `((2 + 3) * (4 + 5))`
 
 The program will visually "peel" and solve it step-by-step in the terminal:
+
 1. ` = (5.0 * (4 + 5))`
 2. ` = (5.0 * 9.0)`
 3. ` = 45.0`
 
-*(SCALE also includes a display formatter that cleans up tiny floating-point rounding errors, so answers like `16.999999999999996` print cleanly as `17.0`!)*
+_(SCALE also includes a display formatter that cleans up tiny floating-point rounding errors, so answers like `16.999999999999996` print cleanly as `17.0`!)_
 
 Enjoy calculating! 🎉

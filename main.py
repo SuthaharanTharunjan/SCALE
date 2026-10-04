@@ -114,7 +114,7 @@ FUNC_PATTERN = re.compile(
 )
 
 BRACKET_PATTERN = re.compile(
-    r"(\blog\s*(?:[\d.]+|\([^)]+\))\s*)|(\d+|e|pi|\))\s*(?=\()|\)\s*(?=[a-zA-Z0-9])|(\d+)\s*(?=(?:pi|e)\b(?![+-]?\d))"
+    r"(\d+|(?<![a-zA-Z])(?:e|pi)|\))(?=\()|\)(?=[a-zA-Z0-9])|(\d+)(?=(?:[a-df-z]|e(?![+-]?\d)))"
 )
 
 
@@ -137,6 +137,7 @@ def rpn_creator(expression: str):
                     output.append(operlist.pop())
 
             operlist.append(token)
+
         else:
             if token == "e":
                 output.append(math.e)
@@ -146,7 +147,7 @@ def rpn_creator(expression: str):
                 try:
                     output.append(float(token))
                 except ValueError:
-                    pass
+                    raise ValueError(f"Unrecognized mathematical token: '{token}'")
 
         prev_token = token
 
@@ -172,6 +173,9 @@ def evaluate_rpn(rpn_list: list):
                     stack.append(action[i](right, left))
                 else:
                     stack.append(action[i](left, right))
+
+    if len(stack) > 1:
+        raise ValueError("Missing operator between numbers")
 
     return str(stack[0]) if stack else "0.0"
 
@@ -232,9 +236,7 @@ def main():
 
         print(f"{GREY}-{RESET}" * 65)
 
-        expression = BRACKET_PATTERN.sub(
-            lambda m: m.group(1) or f"{m.group(0)}*", expression
-        )
+        expression = BRACKET_PATTERN.sub(lambda m: f"{m.group(0)}*", expression)
 
         print(f"{GREY} = {RESET}{colorize_operators(expression, VIOLET)}")
 
