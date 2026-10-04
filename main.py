@@ -114,7 +114,7 @@ FUNC_PATTERN = re.compile(
 )
 
 BRACKET_PATTERN = re.compile(
-    r"(\d+|(?<![a-zA-Z])(?:e|pi)|\))(?=\()|\)(?=[a-zA-Z0-9])|(\d+)(?=(?:[a-df-z]|e(?![+-]?\d)))"
+    r"\)(?=[(a-zA-Z0-9])|(?<![a-zA-Z])(?:e|pi)(?=\()|\d+(?=[(a-df-zA-DF-Z]|(?:e|E)(?![+-]?\d))"
 )
 
 

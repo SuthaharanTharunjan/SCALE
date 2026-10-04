@@ -42,41 +42,58 @@ Under the hood, SCALE processes your math problems using a combination of clever
 
 ## ⚠️ Important Syntax Rules
 
-To ensure the calculator parses your expressions correctly, please follow these core syntax rules:
+To ensure the calculator parses your expressions correctly, please follow these core syntax rules regarding brackets and spacing.
 
-### 1. Mandatory Parentheses for Expressions in Functions
+### 1. Bracketless vs. Bracketed Functions
 
-If you are passing an **expression** (a calculation) into a function like `sin`, `cos`, or a `log` base/value, **you MUST wrap the expression in parentheses.** Otherwise, the program will calculate the function on the first number only, and _then_ apply the rest of the equation.
+You can often skip parentheses for single numbers, but they are **mandatory for mathematical expressions**.
 
-- ❌ **Incorrect:** `sin 2 + 3` (Evaluates as: the sine of 2, plus 3)
-- ✅ **Correct:** `sin(2 + 3)` (Evaluates as: the sine of 5)
+- **Single Values (Brackets Optional):** If you are passing a single number into a function, you can omit the brackets.
+  - ✅ `sin 5` or `sin5`
+  - ✅ `abs -5` or `abs(-5)`
+- **Expressions (Brackets REQUIRED):** If you are passing a calculation into a function, you **MUST** wrap the expression in parentheses. Otherwise, the program applies the function only to the first number.
+  - ❌ `sin 2 + 3` _(Evaluates as: the sine of 2, plus 3)_
+  - ✅ `sin(2 + 3)` _(Evaluates as: the sine of 5)_
+- **Constants as Arguments:** Brackets are highly recommended when passing constants to functions to avoid creating unrecognized words.
+  - ❌ `sinpi` _(Throws an error as an unknown function)_
+  - ✅ `sin(pi)` or `sin pi` _(Properly separated)_
 
-_(Note: Brackets are important when using constants like `sin(pi)`. Otherwise, it will be interpreted as `sinpi`, which is treated as an unknown function and will throw an error.)_
+### 2. Implicit Multiplication (Space-Sensitive)
 
-### 2. Explicit Multiplication is Recomended
+SCALE supports implicit multiplication (multiplying without typing the `*` symbol), but **it requires characters to be touching**. Adding a space disables implicit multiplication.
 
-The calculator **does support implicit multiplication** but explicitly using the `*` operator is recommended.
-
-- ✅ **Correct:** `(894)(15)` or `5(2+3)`
-- ❌ **Incorrect:** `(894) (15)` or `5 (2+3)`
-- ✅ **Correct:** `(894)*(15)` or `5*(2+3)` _(Recomended)_
+- **Adjacent Brackets:**
+  - ✅ `(4)(3)` becomes `(4)*(3)`
+  - ⚠️ `(4) (3)` remains separated (will cause a syntax error)
+- **Numbers next to Variables/Functions:**
+  - ✅ `2sin5` becomes `2*sin5`
+  - ✅ `5pi` becomes `5*pi`
+- **Constants next to Brackets:**
+  - ✅ `pi(2)` becomes `pi*(2)`
+  - ✅ `e(2)` becomes `e*(2)`
 
 ### 3. Logarithm Syntax
 
-To use a logarithm with a custom base, the syntax strictly follows: `log<base> <value>`. Notice that there is **no space** between `log` and the base, but there **is a space** before the value.
+Logarithm syntax strictly follows `log<base> <value>`.
 
-- **Custom Base (`log`):** To calculate $\log_6(23)$, type `log` immediately followed by the base (`6`), a space, and then the argument (`23`).
-  - ✅ **Syntax:** `log6 23`
-  - ✅ **Syntax with expressions:** `log6 (10 + 13)` or `log(2+4) (10+13)`
+- **Custom Base (`log`):** No space between `log` and the base, but a space or bracket is required before the value.
+  - ✅ `log6 23`
+  - ✅ `log6 (10 + 13)`
+  - ✅ `log(2+4) (10+13)`
+- **Base 10 (`lg`) & Natural Log (`ln`):** Work like standard functions.
+  - ✅ `lg(100)` or `lg100` or `lg 100`
+  - ✅ `ln(5)` or `ln5` or `ln 5`
 
-- **Base 10 (`lg`):** Works like a standard function.
-  - ✅ **Syntax:** `lg(100)` or `lg100`
+### 4. Scientific Notation vs. Euler's Number (`e`)
 
-- **Natural Log (`ln`):** Works like a standard function.
-  - ✅ **Syntax:** `ln(5)` or `ln5`
+Because `e` is used for both Euler's number and Scientific Notation, spacing and brackets dictate how SCALE interprets it.
 
-_(Note: you can add space after log or lg or ln like `log 6 23` or `lg 23` or `ln 23`)_
-_(Note: Brackets are important when using constants like `ln(e)`. Otherwise, it will be interpreted as `lne`, which is treated as an unknown function and will throw an error.)_
+- **Scientific Notation (A Single Number):** When `e` or `E` is tightly sandwiched between digits without brackets, it means "times 10 to the power of".
+  - ✅ `1.5e3` evaluates to `1500.0`
+  - ✅ `2E-4` evaluates to `0.0002`
+- **Euler's Number (Multiplication):** If `e` touches a bracket, it is treated as the mathematical constant $e$ (`2.71828...`).
+  - ✅ `1e(5)` becomes `1 * e * (5)`
+  - ✅ `(1.5)e(-3)` becomes `(1.5) * e * (-3)`
 
 ---
 
@@ -162,7 +179,7 @@ Similar to `e`, `pi` represents the mathematical constant Pi (approximately `3.1
 
 `exp` is a mathematical function that raises Euler's number `e` to the power of the number you provide ($e^x$).
 
-- **Example:** `exp(2)` or `exp 2` is exactly the same as calculating `e ^ 2` but more accurate.
+- **Example:** `exp(2)` or `exp 2` is exactly the same as calculating `e^2` but more accurate.
 
 ### 4. Scientific Notation (e.g., `1.5e3`)
 
@@ -171,7 +188,7 @@ When `e` or `E` is sandwiched tightly inside a number, it represents **Scientifi
 - **Example 1:** `1.5e3` means $1.5 \times 10^3$, which evaluates to `1500.0`.
 - **Example 2:** `2E-4` means $2 \times 10^{-4}$, which evaluates to `0.0002`.
 
-_(Note the difference: `2e3` is scientific notation for `2000`, whereas `2 _ e ^ 3` is math using Euler's number!)\*
+_(Note the difference: `2e3` is scientific notation for `2000`, whereas `2e^3` is math using Euler's number!)_
 
 ---
 
