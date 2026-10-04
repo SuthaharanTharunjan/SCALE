@@ -105,12 +105,23 @@ single_arg_operators = (
     "r",
 )
 
+TOKEN_PATTERN = re.compile(
+    r"\d+\.\d+(?:[eE][-+]?\d+)?|\.\d+(?:[eE][-+]?\d+)?|\d+(?:[eE][-+]?\d+)?|[a-zA-Z]+|[^\s]"
+)
+
+FUNC_PATTERN = re.compile(
+    r"\b(?:sin|sinh|asin|asinh|cos|cosh|acos|acosh|tan|tanh|atan|atanh|log|ln|lg|exp|sqrt|abs|d|r)\b|[+/*%^\-]"
+)
+
+BRACKET_PATTERN = re.compile(
+    r"(\blog\s*(?:[\d.]+|\([^)]+\))\s*)|(\d+|e|pi|\))\s*(?=\()|\)\s*(?=[a-zA-Z0-9])|(\d+)\s*(?=(?:pi|e)\b(?![+-]?\d))"
+)
+
 
 def rpn_creator(expression: str):
     output = []
     operlist = []
-    pattern = r"\d+\.\d+(?:[eE][-+]?\d+)?|\.\d+(?:[eE][-+]?\d+)?|\d+(?:[eE][-+]?\d+)?|[a-zA-Z]+|[^\s]"
-    tokens = re.findall(pattern, expression)
+    tokens = TOKEN_PATTERN.findall(expression)
     prev_token = None
     for token in tokens:
         if token in ("+", "-"):
@@ -182,12 +193,7 @@ def peeler(expression: str):
     return sub_expression, index_1, index_2
 
 
-FUNC_PATTERN = re.compile(
-    r"\b(?:sin|sinh|asin|asinh|cos|cosh|acos|acosh|tan|tanh|atan|atanh|log|ln|lg|exp|sqrt|abs|d|r)\b|[+/*%^\-]"
-)
-
-
-def colorize_numbers(text: str, base_color: str) -> str:
+def colorize_operators(text: str, base_color: str) -> str:
     colored_text = FUNC_PATTERN.sub(lambda m: f"{base_color}{m.group(0)}{RESET}", text)
     return f"{RESET}{colored_text}"
 
@@ -226,12 +232,11 @@ def main():
 
         print(f"{GREY}-{RESET}" * 65)
 
-        pattern = r"(\blog\s*(?:[\d.]+|\([^)]+\))\s*)|(\d+|e|pi|\))\s*(?=\()|\)\s*(?=[a-zA-Z0-9])|(\d+)\s*(?=(?:pi|e)\b(?![+-]?\d))"
-        expression = re.sub(
-            pattern, lambda m: m.group(1) or f"{m.group(0)}*", expression
+        expression = BRACKET_PATTERN.sub(
+            lambda m: m.group(1) or f"{m.group(0)}*", expression
         )
 
-        print(f"{GREY} = {RESET}{VIOLET}{colorize_numbers(expression, VIOLET)}{RESET}")
+        print(f"{GREY} = {RESET}{colorize_operators(expression, VIOLET)}")
 
         try:
             while ("(" in expression) or (")" in expression):
@@ -242,9 +247,7 @@ def main():
                     + f"{sub_expression_m}"
                     + expression[idx_end + 1 :]
                 )
-                print(
-                    f"{GREY} = {RESET}{VIOLET}{colorize_numbers(expression, VIOLET)}{RESET}"
-                )
+                print(f"{GREY} = {RESET}{colorize_operators(expression, VIOLET)}")
 
             ans = evaluate_rpn(rpn_creator(expression))
             print(f"{GREY} = {RESET}{ans}")
