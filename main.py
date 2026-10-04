@@ -110,7 +110,7 @@ TOKEN_PATTERN = re.compile(
 )
 
 FUNC_PATTERN = re.compile(
-    r"\b(?:sin|sinh|asin|asinh|cos|cosh|acos|acosh|tan|tanh|atan|atanh|log|ln|lg|exp|sqrt|abs|d|r)\b|[+/*%^\-]"
+    r"(?<![a-zA-Z])(?:sin|sinh|asin|asinh|cos|cosh|acos|acosh|tan|tanh|atan|atanh|log|ln|lg|exp|sqrt|abs|d|r)(?![a-zA-Z])|[+/*%^\-]"
 )
 
 BRACKET_PATTERN = re.compile(
